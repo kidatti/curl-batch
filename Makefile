@@ -105,6 +105,18 @@ tag:
 	git push origin $(VERSION)
 	@echo "Tagged and pushed $(VERSION). GitHub Actions will create the release."
 
+# Remove git tag (local and remote)
+.PHONY: untag
+untag:
+	@if [ -z "$(VERSION)" ] || [ "$(VERSION)" = "latest" ]; then \
+		echo "Please specify VERSION: make untag VERSION=v1.0.0"; \
+		exit 1; \
+	fi
+	@echo "Removing tag $(VERSION)..."
+	git tag -d $(VERSION) || echo "Local tag $(VERSION) not found"
+	git push origin :refs/tags/$(VERSION) || echo "Remote tag $(VERSION) not found"
+	@echo "Tag $(VERSION) removed from local and remote repositories"
+
 # Show help
 .PHONY: help
 help:
@@ -116,6 +128,7 @@ help:
 	@echo "  build-windows- Build for Windows (amd64, arm64)"
 	@echo "  package      - Create release packages (tar.gz, zip)"
 	@echo "  tag          - Create and push git tag (use VERSION=v1.0.0)"
+	@echo "  untag        - Remove git tag locally and remotely (use VERSION=v1.0.0)"
 	@echo "  test         - Run tests"
 	@echo "  clean        - Clean build artifacts"
 	@echo "  run-sample   - Build and run with sample data"
